@@ -1,0 +1,8 @@
+<h1>{{headline}}</h1>
+
+<form accept-charset="{{charset}}" action="" method="POST">
+	Are you sure you want to remove {{model}} #{{#item}}{{id}}{{/item}}?
+	
+	<button class="success" name="action" type="submit" value="yes">Yes</button>
+	<button class="warning" name="action" type="submit" value="no">No</button>
+</form>

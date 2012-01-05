@@ -1,0 +1,31 @@
+<h1>{{headline}}</h1>
+
+{{#create_button}}
+<a class="btn primary large" href="{{url}}">{{text}}</a>
+{{/create_button}}
+
+{{#result}}
+<table>
+	<thead>
+		{{#columns}}
+		
+		{{/columns}}
+	</thead>
+	<tbody>	
+		{{#rows}}
+		<tr>
+			<td>{{id}}</td>
+			<td>
+				<a href="{{view_url}}">{{title}}</a>
+			</td>
+			<td>
+				<a class="btn primary" href="{{update_url}}">Edit</a>
+				<a class="btn warning" href="{{delete_url}}">Delete</a>
+			</td>
+		</tr>
+		{{/rows}}
+	</tbody>
+</table>
+{{/result}}
+
+{{{pagination}}}

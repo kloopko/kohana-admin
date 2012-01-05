@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="bs">
+<head>
+<meta charset="utf-8">
+<title>{{title}}</title>
+<!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+<!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+{{#css}}
+<link rel="stylesheet" href="{{href}}" type="text/css" media="{{media}}" />{{/css}}
+{{#head_js}}
+<script type="text/javascript" src="{{src}}"></script>{{/head_js}}
+<style type="text/css">
+body {
+	padding-top: 60px;
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+	<div class="topbar-inner">
+		<div class="container">
+			<a href="{{home_link}}" class="brand">Kloopko</a>
+			<ul class="nav">
+				{{#header_links}}
+				<li class="{{class}}">
+					<a href="{{url}}">{{text}}</a>
+				</li>
+				{{/header_links}}
+			</ul>
+			<p class="pull-right">
+				{{{header_text}}}
+			</p>
+		</div>
+	</div>
+</div>
+<div class="container">
+
+	{{>content}}
+	
+</div>
+<footer>
+	<p class="container">
+		Admin panel created by <a href="http://kloopko.com/">Kloopko</a>.
+	</p>
+</footer>
+<script type="text/javascript">
+$('.alert-message .close').click(function(e){
+	e.preventDefault();
+	
+	$(this).parent().slideUp();
+});
+</script>
+</body>
+</html>
