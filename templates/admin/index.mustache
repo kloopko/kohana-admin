@@ -5,11 +5,13 @@
 {{/create_button}}
 
 {{#result}}
-<table>
+<table class="zebra-striped">
 	<thead>
+		<tr>
 		{{#columns}}
-		<td>{{name}}</td>
+		<th>{{name}}</th>
 		{{/columns}}
+		</tr>
 	</thead>
 	<tbody>	
 		{{#rows}}
