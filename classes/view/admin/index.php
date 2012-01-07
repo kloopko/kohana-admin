@@ -1,8 +1,10 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /** 
- * Generic (R)EAD view model - for multiple records
+ * Generic (R)EAD view model - Multiple records
  */
 class View_Admin_Index extends View_Admin_Layout {
+
+	const OPTIONS_ALIAS = 'options::col';
 
 	/**
 	 * @var	Database_Result
@@ -44,28 +46,48 @@ class View_Admin_Index extends View_Admin_Layout {
 		$columns = $model->table_columns();
 		
 		// Always include the primary key first
-		$result = array($model->primary_key() => 'ID');
+		$result = array(
+			 array(
+				'alias' => $model->primary_key(),
+				'name' 	=> 'ID',
+			),
+		);
 		
 		// Also include some default columns - if they exist
 		foreach (array('name','title','email') as $includable)
 		{
 			if (isset($columns[$includable]))
 			{
-				$result[$includable] = ucfirst($includable);
+				$result[] = array(
+					'alias' => $includable,
+					'name' 	=> ucfirst($includable),
+				);
 			}
 		}
 		
 		// Include the created column - if it exists
 		if ($created = $model->created_column())
 		{
-			$result[$created['column']] = 'Created';
+			$result[] = array(
+				'alias' => $created['column'],
+				'name' 	=> 'Created',
+			);
 		}
 		
 		// Include the updated column - if it exists
 		if ($updated = $model->updated_column())
 		{
-			$result[$updated['column']] = 'Last update';
+			$result[] = array(
+				'alias' => $updated['column'],
+				'name' 	=> 'Last update',
+			);
 		}
+		
+		// Append the options array the last
+		$result[] = array(
+			'alias' => static::OPTIONS_ALIAS,
+			'name'	=> 'Options',
+		);
 		
 		return $this->_columns = $result;
 	}
@@ -94,36 +116,56 @@ class View_Admin_Index extends View_Admin_Layout {
 		$result = array();
 		
 		if (count($this->items) > 0)
-		{			
+		{
 			$result['rows'] = array();
 			
 			foreach ($this->items as $item)
 			{
-				$push = $item->as_array();
+				// Extract aliased values from self::columns()
+				$extracted = Arr::extract($item->as_array(), Arr::pluck($this->columns(), 'alias'));
 				
-				$push['delete_url'] = Route::url('admin', array(
-					'controller' 	=> $this->controller,
-					'action'		=> 'delete',
-					'id'			=> $item->id,
-				));
+				// Remove the options aliased column
+				unset($extracted[static::OPTIONS_ALIAS]);
 				
-				$push['update_url'] = Route::url('admin', array(
-					'controller' 	=> $this->controller,
-					'action'		=> 'update',
-					'id'			=> $item->id,
-				));
+				// Create a numeric array for Mustache
+				$numeric = array_fill(0, count($extracted), '');
 				
-				$push['view_url']	= Route::url('admin', array(
-					'controller'	=> $this->controller,
-					'action'		=> 'view',
-					'id'			=> $item->id,
-				));
+				$values = array_combine(array_keys($numeric), $extracted);
 				
-				$result['rows'][] = $push;
+				// Map all values to array('value' => $value)
+				$values = array_map(function($val) { return array('value' => $val); }, $values);
+				
+				
+				// Map options
+				$controller = $this->controller;
+				
+				$options = array_map(function($data) use ($controller, $item) {
+					return array(
+						'class' => $data['class'],
+						'text'	=> $data['text'],
+						'url'	=> Route::url('admin', array(
+							'controller' 	=> $controller,
+							'action'		=> $data['action'],
+							'id'			=> $item->id,
+						)),
+					);
+				}, static::$_options_array);
+				
+				// Push data to the rows array
+				$result['rows'][] = array(
+					'options' 	=> $options,
+					'values' 	=> $values,
+				);
 			}
 		}
 		
 		return $this->_result = $result;
 	}
+	
+	protected static $_options_array = array(
+		array('class' => 'btn primary','text' => 'View','action' => 'read'),
+		array('class' => 'btn success','text' => 'Edit','action' => 'update'),
+		array('class' => 'btn danger','text' => 'Delete','action' => 'delete'),
+	);
 	
 }

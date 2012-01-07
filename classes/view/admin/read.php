@@ -2,7 +2,7 @@
 /** 
  * Generic (R)EAD view model - for single record
  */
-class View_Admin_View extends View_Admin_Layout {
+class View_Admin_Read extends View_Admin_Layout {
 
 	/**
 	 * @var	Model

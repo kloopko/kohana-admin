@@ -146,7 +146,7 @@ abstract class Controller_Admin_CRUD extends Controller_Admin {
 					
 				$this->request->redirect(Route::url('admin', array(
 					'controller' 	=> $this->request->controller(),
-					'action'		=> 'view',
+					'action'		=> 'read',
 					'id'			=> $item->id,
 				)));
 			}
@@ -159,7 +159,7 @@ abstract class Controller_Admin_CRUD extends Controller_Admin {
 		$this->view->item = $item;
 	}
 	
-	public function action_view()
+	public function action_read()
 	{
 		$item = ORM::factory($this->_model, $this->request->param('id'));
 		

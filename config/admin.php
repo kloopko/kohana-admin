@@ -4,17 +4,12 @@ return array(
 	'layout' => array(
 		'css'	=>	array(
 			array(
-				'href'	=> URL::site('admin/bootstrap.css'),
+				'href'	=> Route::url('admin/media', array('file' => 'bootstrap.css')),
 				'media'	=> 'screen',
-			),
-			array(
-				'href' => URL::site('colorpicker/css/colorpicker.css'),
-				'media'=> 'screen',
 			),
 		),
 		
 		'head_js' => array(
-			array('src' => URL::site('js/jquery.js')),
 			array('src' => URL::site('js/jquery.ajaxform.js')),
 			array('src' => URL::site('colorpicker/js/colorpicker.js')),
 		),
@@ -22,5 +17,8 @@ return array(
 		'title' => array(
 			'default' => 'Kloopko Admin',
 		),
+	),
+	'media' => array(
+		
 	),
 );

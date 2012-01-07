@@ -2,6 +2,8 @@
 
 abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 
+	protected $_config;
+
 	/**
 	 * @var  string  layout path
 	 */
@@ -41,11 +43,28 @@ abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 	}
 	
 	/**
+	 * (Create and) Retrieve admin Config
+	 *
+	 * @return	Config
+	 */
+	public function config()
+	{
+		if ($this->_config === NULL)
+		{
+			$this->_config = Kohana::$config->load('admin')->get('layout');
+		}
+		
+		return $this->_config;
+	}
+	
+	/**
 	 * CSS files to load
 	 */
 	public function css()
 	{
-		return Kohana::$config->load('admin.layout.css.head');
+		$css = Arr::path($this->config(), 'css');
+		
+		return $css;
 	}
 	
 	/**
@@ -61,7 +80,7 @@ abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 	 */
 	public function head_js()
 	{
-		return Kohana::$config->load('admin.layout.js.head');
+		return Arr::path($this->config(), 'head_js');
 	}
 	
 	/**
@@ -126,7 +145,7 @@ abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 	 */
 	public function title()
 	{
-		return $this->title ?: Kohana::$config->load('admin.layout.title.default');
+		return $this->title ?: Arr::path($this->config(), 'title.default');
 	}
 	
 }

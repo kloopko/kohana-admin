@@ -5,6 +5,11 @@
 class View_Admin_Update extends View_Admin_Layout {
 
 	/**
+	 * @var	mixed	[Kostache|Formo] form
+	 */
+	public $form;
+
+	/**
 	 * @var	Model
 	 */
 	public $item;
@@ -13,6 +18,40 @@ class View_Admin_Update extends View_Admin_Layout {
 	 * @var	array	validation errors
 	 */
 	public $errors;
+	
+	public function form()
+	{
+		if ( ! $this->form)
+		{
+			// If formo is enabled, use it to generate a form
+			if (class_exists('Formo'))
+			{
+				// Always exclude the primary key field
+				$excluded = array(
+					$this->item->primary_key()
+				);
+				
+				// If there is a creation date column, don't display it
+				if ($this->item->created_column())
+				{
+					$excluded[] = Arr::get($this->item->created_column(), 'column');
+				}
+				
+				// If there is a update date column, don't display it
+				if ($this->item->updated_column())
+				{
+					$excluded[] = Arr::get($this->item->updated_column(), 'column');
+				}
+			
+				// Create the form but don't include the 
+				$this->form = Formo::form()->orm('load', $this->item, $excluded, TRUE);
+					
+				$this->form->add('Update','submit');
+			}
+		}
+		
+		return $this->form;
+	}
 	
 	/**
 	 * @return	string	Page headline

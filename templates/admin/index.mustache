@@ -8,19 +8,19 @@
 <table>
 	<thead>
 		{{#columns}}
-		
+		<td>{{name}}</td>
 		{{/columns}}
 	</thead>
 	<tbody>	
 		{{#rows}}
 		<tr>
-			<td>{{id}}</td>
+			{{#values}}
+			<td>{{value}}</td>
+			{{/values}}
 			<td>
-				<a href="{{view_url}}">{{title}}</a>
-			</td>
-			<td>
-				<a class="btn primary" href="{{update_url}}">Edit</a>
-				<a class="btn warning" href="{{delete_url}}">Delete</a>
+			{{#options}}
+				<a class="{{class}}" href="{{url}}">{{text}}</a>
+			{{/options}}
 			</td>
 		</tr>
 		{{/rows}}
