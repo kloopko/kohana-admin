@@ -27,9 +27,7 @@ class View_Admin_Update extends View_Admin_Layout {
 			if (class_exists('Formo'))
 			{
 				// Always exclude the primary key field
-				$excluded = array(
-					$this->item->primary_key()
-				);
+				$excluded = array($this->item->primary_key());
 				
 				// If there is a creation date column, don't display it
 				if ($this->item->created_column())
@@ -44,9 +42,23 @@ class View_Admin_Update extends View_Admin_Layout {
 				}
 			
 				// Create the form but don't include the 
-				$this->form = Formo::form()->orm('load', $this->item, $excluded, TRUE);
-					
-				$this->form->add('Update','submit');
+				$this->form = Formo::form()
+					->orm('load', $this->item, $excluded, TRUE)
+					->set('view_prefix','bootstrap')
+					->add('token','hidden',Security::token())
+					->add('Update','button','update',array('attr' => 
+						array('class' => 'btn large primary','type' => 'submit')));
+						
+				if ($this->errors)
+				{
+					foreach ($this->errors as $field => $error)
+					{
+						if ($field = $this->form->$field)
+						{
+							$field->error($error);
+						}
+					}
+				}
 			}
 		}
 		

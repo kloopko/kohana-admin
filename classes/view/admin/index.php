@@ -133,23 +133,30 @@ class View_Admin_Index extends View_Admin_Layout {
 				$values = array_combine(array_keys($numeric), $extracted);
 				
 				// Map all values to array('value' => $value)
-				$values = array_map(function($val) { return array('value' => $val); }, $values);
+				$values = array_map(function($val) { 
+					
+					return array('value' => $val);
+				
+				}, $values);
 				
 				
 				// Map options
-				$controller = $this->controller;
+				$options = array();
 				
-				$options = array_map(function($data) use ($controller, $item) {
-					return array(
-						'class' => $data['class'],
-						'text'	=> $data['text'],
+				foreach (static::options() as $action)
+				{
+					$details = static::options_array($action);
+					
+					$options[] = array(
+						'class' => $details['class'],
+						'text' 	=> $details['text'],
 						'url'	=> Route::url('admin', array(
-							'controller' 	=> $controller,
-							'action'		=> $data['action'],
+							'controller' 	=> $this->controller,
+							'action'		=> $action,
 							'id'			=> $item->id,
 						)),
 					);
-				}, static::$_options_array);
+				}
 				
 				// Push data to the rows array
 				$result['rows'][] = array(
@@ -162,10 +169,53 @@ class View_Admin_Index extends View_Admin_Layout {
 		return $this->_result = $result;
 	}
 	
-	protected static $_options_array = array(
-		array('class' => 'btn primary','text' => 'View','action' => 'read'),
-		array('class' => 'btn success','text' => 'Edit','action' => 'update'),
-		array('class' => 'btn danger','text' => 'Delete','action' => 'delete'),
-	);
+	/**
+	 * List of available actions to display for each individual row
+	 *
+	 * @return	array
+	 */
+	public static function options()
+	{
+		return array(
+			'read',
+			'update',
+			'delete',
+		);
+	}
+	
+	/**
+	 * List of action => details for individual row (action) options
+	 * This has to be a method so the child view can override / extend it
+	 * 
+	 * @param	string	$key - to return individual row
+	 * @return	array
+	 */
+	public static function options_array($key = NULL)
+	{
+		static $options_array;
+		
+		if ($options_array === NULL)
+		{
+			$options_array = array(
+				'read' => array(
+					'class' 	=> 'btn primary',
+					'text' 		=> 'View',
+				),
+				'update' => array(
+					'class' 	=> 'btn success',
+					'text' 		=> 'Edit',
+				),
+				'delete' => array(
+					'class' 	=> 'btn danger',
+					'text' 		=> 'Delete',
+				),
+			);
+		}
+		
+		if ($key !== NULL)
+			return $options_array[$key];
+		
+		return $options_array;
+	}
 	
 }

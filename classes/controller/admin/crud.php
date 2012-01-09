@@ -50,7 +50,7 @@ abstract class Controller_Admin_CRUD extends Controller_Admin {
 				}
 				else
 				{
-					echo 'Form not available: '.$tpl;
+					#echo 'Form not available: '.$tpl;
 				}
 			}
 		}
@@ -104,6 +104,8 @@ abstract class Controller_Admin_CRUD extends Controller_Admin {
 			
 			$this->response->body('SUCCESS');
 		}
+		
+		$this->view->item = $item;
 	}
 	
 	public function action_create()
@@ -112,10 +114,14 @@ abstract class Controller_Admin_CRUD extends Controller_Admin {
 		
 		if ($this->request->method() === Request::POST)
 		{
+			$validation = Validation::factory($this->request->post())
+				->rule('token','not_empty')
+				->rule('token','Security::check');
+				
 			try
 			{
 				$item->values($this->request->post())
-					->create();
+					->create($validation);
 					
 				$this->request->redirect(Route::url('admin', array(
 					'controller' => $this->request->controller()
@@ -123,7 +129,7 @@ abstract class Controller_Admin_CRUD extends Controller_Admin {
 			}
 			catch (ORM_Validation_Exception $e)
 			{
-				$this->view->errors += $e->errors('');
+				$this->view->errors = $e->errors('validation');
 			}
 		}
 			
@@ -139,10 +145,14 @@ abstract class Controller_Admin_CRUD extends Controller_Admin {
 			
 		if ($this->request->method() === Request::POST)
 		{
+			$validation = Validation::factory($this->request->post())
+				->rule('token','not_empty')
+				->rule('token','Security::check');
+				
 			try
 			{
 				$item->values($this->request->post())
-					->update();
+					->update($validation);
 					
 				$this->request->redirect(Route::url('admin', array(
 					'controller' 	=> $this->request->controller(),
@@ -152,7 +162,7 @@ abstract class Controller_Admin_CRUD extends Controller_Admin {
 			}
 			catch (ORM_Validation_Exception $e)
 			{
-				$this->view->errors += $e->errors('');
+				$this->view->errors = $e->errors('validation');
 			}
 		}
 			

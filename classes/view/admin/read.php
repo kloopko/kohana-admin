@@ -10,11 +10,59 @@ class View_Admin_Read extends View_Admin_Layout {
 	public $item;
 	
 	/**
+	 * @return	array	Available buttons
+	 */
+	public function buttons()
+	{
+		return array(
+			array(
+				'class' => 'large success',
+				'text' => 'Update',
+				'url' => Route::url('admin', array(
+					'controller' 	=> $this->controller,
+					'action' 		=> 'update',
+					'id' 			=> $this->item->id,
+				)),
+			),
+			array(
+				'class' => 'large error',
+				'text' => 'Delete',
+				'url' => Route::url('admin', array(
+					'controller' 	=> $this->controller,
+					'action' 		=> 'delete',
+					'id' 			=> $this->item->id,
+				)),
+			),
+		);
+	}
+	
+	/**
 	 * @return	string	Page headline
 	 */
 	public function headline()
 	{
-		return 'View '.$this->model().' #'.$this->item->id;
+		return ucfirst($this->model()).' #'.$this->item->id;
+	}
+	
+	/**
+	 * @return	array	field => value
+	 */
+	public function values()
+	{
+		$array 	= $this->item->object();
+		$labels = $this->item->labels();
+		
+		$result = array();
+		
+		foreach ($array as $field => $value)
+		{
+			$result[] = array(
+				'label' => Arr::get($labels, $field, ucfirst($field)),
+				'value' => $value,
+			);
+		}
+		
+		return $result;
 	}
 	
 }

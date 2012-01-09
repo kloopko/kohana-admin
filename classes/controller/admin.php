@@ -29,9 +29,17 @@ abstract class Controller_Admin extends Kohana_Controller {
 		
 		if ( ! Auth::instance()->logged_in('admin'))
 		{
-			#$this->request->redirect('admin/login');
-			
 			#throw new HTTP_Exception_403('Access denied.');
+			
+			if ($this->request->action() !== 'login')
+			{
+				$url = Route::url('admin',array(
+					'controller' 	=> 'auth',
+					'action' 		=> 'login',
+				));
+				
+				$this->request->redirect($url);
+			}
 		}
 	}
 	

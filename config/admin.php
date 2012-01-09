@@ -1,6 +1,9 @@
 <?php
 
 return array(
+	'app' => array(
+		'name' => 'kloopko',
+	),
 	'layout' => array(
 		'css'	=>	array(
 			array(

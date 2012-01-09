@@ -1,9 +1,18 @@
-<h1>{{headline}}</h1>
+<div class="page-header">
+	<h1>{{headline}}</h1>
+</div>
 
-{{#delete_button}}
-<a class="btn primary large" href="{{url}}">{{text}}</a>
-{{/delete_button}}
-{{#update_button}}
-<a class="btn primary large" href="{{url}}">{{text}}</a>
-{{/update_button}}
+<div class="actions">
+	{{#buttons}}
+	<a class="btn {{class}}" href="{{url}}">{{text}}</a>
+	{{/buttons}}
+</div>
 
+{{#values}}
+<div class="row">
+	<div class="span4">
+		<strong>{{label}}</strong>
+	</div>
+	<div class="span12">{{value}}</div>
+</div>
+{{/values}}
