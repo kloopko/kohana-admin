@@ -1,0 +1,13 @@
+<ul class="breadcrumb">
+{{#links}}
+	{{#active}}
+	<li class="active">{{text}}</li>
+	{{/active}}
+	{{^active}}
+	<li>
+		<a href="{{url}}">{{text}}</a>
+		<span class="divider">/</span>
+	</li>
+	{{/active}}
+{{/links}}
+</ul>

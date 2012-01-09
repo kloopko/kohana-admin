@@ -7,7 +7,7 @@ class Controller_Admin_Auth extends Controller_Admin {
 		if ($this->request->method() === Request::POST)
 		{
 			list($username, $password, $remember) = array_values(
-				arr::extract($this->request->post(), array(
+				Arr::extract($this->request->post(), array(
 					'username','password','remember',
 				)));
 				

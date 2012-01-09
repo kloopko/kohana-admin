@@ -26,7 +26,7 @@ class View_Admin_Index extends View_Admin_Layout {
 				'controller' 	=> $this->controller,
 				'action'		=> 'create',
 			)),
-			'text' => 'Create new '.$this->model,
+			'text' => 'Create new '.Inflector::humanize($this->model),
 		);
 	}
 	

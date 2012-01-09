@@ -16,29 +16,22 @@ abstract class Controller_Admin extends Kohana_Controller {
 	{
 		parent::before();
 		
+		// Security headers
+		$this->response
+			->headers('x-content-type-options','nosniff')
+			->headers('x-frame-options','SAMEORIGIN')
+			->headers('x-xss-protection','1; mode=block');
+			
+		static::check_permissions($this->request);
+		
 		// Automatically figure out the ViewModel for the current action 
 		if ($this->auto_view === TRUE)
 		{
-			list($view_name, $view_path) = Controller_Admin::find_view($this->request);
+			list($view_name, $view_path) = static::find_view($this->request);
 			
 			if (Kohana::find_file('classes', $view_path))
 			{
 				$this->view = new $view_name;
-			}
-		}
-		
-		if ( ! Auth::instance()->logged_in('admin'))
-		{
-			#throw new HTTP_Exception_403('Access denied.');
-			
-			if ($this->request->action() !== 'login')
-			{
-				$url = Route::url('admin',array(
-					'controller' 	=> 'auth',
-					'action' 		=> 'login',
-				));
-				
-				$this->request->redirect($url);
 			}
 		}
 	}
@@ -56,16 +49,36 @@ abstract class Controller_Admin extends Kohana_Controller {
 			// Response body isn't set yet, set it to this controllers' view
 			if ( ! $this->response->body())
 			{
-				$this->response->body($this->view);
+				$this->response->body($this->view->render());
 			}
 		}
 		
-		$this->response
-			->headers('x-content-type-options','nosniff')
-			->headers('x-frame-options','SAMEORIGIN')
-			->headers('x-xss-protection','1; mode=block');
-		
 		return parent::after();
+	}
+	
+	/**
+	 * Check permissions for a certain Request
+	 *    	Uses late static binding so children classes can override this method 
+	 * 		only in order to replace its functionality
+	 *
+	 * @param	Request	$request
+	 */
+	public static function check_permissions(Request $request)
+	{
+		if ( ! Auth::instance()->logged_in('admin'))
+		{
+			#throw new HTTP_Exception_403('Access denied.');
+			
+			if ($request->action() !== 'login')
+			{
+				$url = Route::url('admin',array(
+					'controller' 	=> 'auth',
+					'action' 		=> 'login',
+				));
+				
+				$request->redirect($url);
+			}
+		}
 	}
 	
 	/**
@@ -79,10 +92,7 @@ abstract class Controller_Admin extends Kohana_Controller {
 		$view_name = array('View');
 		
 		// If current request's route is set to a directory, prepend to view name
-		if ($request->directory())
-		{
-			array_push($view_name, $request->directory());
-		}
+		$request->directory() and array_push($view_name, $request->directory());
 		
 		// Append controller and action name to the view name array
 		array_push($view_name, $request->controller(), $request->action());

@@ -31,10 +31,13 @@ abstract class Controller_Admin_CRUD extends Controller_Admin {
 		// If view has been detected/specified already, set other defaults
 		if ($this->view)
 		{
-			// Assign the current controller to the view
+			// Assign current action name to the view
+			$this->view->action = $this->request->action();
+			
+			// Assign current controller name to the view
 			$this->view->controller = $this->request->controller();
 			
-			// Assign model name to the view
+			// Assign current model name to the view
 			$this->view->model = $this->_model;
 			
 			// Check if form partial exists and assign it (for CREATE / UPDATE)
@@ -134,6 +137,10 @@ abstract class Controller_Admin_CRUD extends Controller_Admin {
 		}
 			
 		$this->view->item = $item;
+		$this->view->breadcrumb()->add('action',array(
+			'text' 	=> 'Create new '.$this->_model, 
+			'url' 	=> $this->request->url(),
+		));
 	}
 	
 	public function action_update()
