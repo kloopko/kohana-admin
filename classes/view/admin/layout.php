@@ -73,6 +73,17 @@ abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 			
 			switch ($this->action)
 			{
+				default:
+					
+					if ($this->action)
+					{
+						$breadcrumb->add('action', array(
+							'text' 	=> ucfirst($this->action),
+							'url'	=> $this->current_url(),
+						));
+					}
+					
+				break;
 				case 'create' :
 					
 					$breadcrumb->add('action', array(
@@ -84,7 +95,7 @@ abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 				case 'read' :
 				
 					$breadcrumb->add('action',array(
-						'text' 	=> 'Read '.$this->model(),
+						'text' 	=> 'View '.$this->model(),
 						'url' 	=> $this->current_url(),
 					));
 				
@@ -113,6 +124,8 @@ abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 	
 	/**
 	 * Application charset
+	 * 
+	 * @return	string
 	 */
 	public function charset()
 	{
@@ -222,10 +235,9 @@ abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 		
 		$links[] = array(
 			'text' 	=> 'Log out »',
-			'url'	=> Route::url('admin', array(
-				'controller' 	=> 'auth',
-				'action' 		=> 'logout',
-				'id' 			=> Security::token(),
+			'url'	=> Route::url('admin/auth', array(
+				'action'	=> 'logout',
+				'token'		=> Security::token(),
 			)),
 		);
 		

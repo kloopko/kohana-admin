@@ -5,6 +5,8 @@
 class View_Admin_Index extends View_Admin_Layout {
 
 	const OPTIONS_ALIAS = 'options::col';
+	
+	protected $_template = 'admin/index';
 
 	/**
 	 * @var	Database_Result
@@ -26,7 +28,7 @@ class View_Admin_Index extends View_Admin_Layout {
 				'controller' 	=> $this->controller,
 				'action'		=> 'create',
 			)),
-			'text' => 'Create new '.Inflector::humanize($this->model),
+			'text' => 'Create new '.$this->model(),
 		);
 	}
 	
@@ -143,9 +145,9 @@ class View_Admin_Index extends View_Admin_Layout {
 				// Map options
 				$options = array();
 				
-				foreach (static::options() as $action)
+				foreach ($this->options() as $action)
 				{
-					$details = static::options_array($action);
+					$details = Arr::get(static::options_array(), $action);
 					
 					$options[] = array(
 						'class' => $details['class'],
@@ -174,7 +176,7 @@ class View_Admin_Index extends View_Admin_Layout {
 	 *
 	 * @return	array
 	 */
-	public static function options()
+	public function options()
 	{
 		return array(
 			'read',
@@ -183,39 +185,30 @@ class View_Admin_Index extends View_Admin_Layout {
 		);
 	}
 	
+	protected $_options_array = array(
+		'read' => array(
+			'class' 	=> 'btn primary',
+			'text' 		=> 'View',
+		),
+		'update' => array(
+			'class' 	=> 'btn success',
+			'text' 		=> 'Edit',
+		),
+		'delete' => array(
+			'class' 	=> 'btn danger',
+			'text' 		=> 'Delete',
+		),
+	);
+	 
 	/**
 	 * List of action => details for individual row (action) options
 	 * This has to be a method so the child view can override / extend it
 	 * 
-	 * @param	string	$key - to return individual row
 	 * @return	array
 	 */
-	public static function options_array($key = NULL)
+	public function options_array()
 	{
-		static $options_array;
-		
-		if ($options_array === NULL)
-		{
-			$options_array = array(
-				'read' => array(
-					'class' 	=> 'btn primary',
-					'text' 		=> 'View',
-				),
-				'update' => array(
-					'class' 	=> 'btn success',
-					'text' 		=> 'Edit',
-				),
-				'delete' => array(
-					'class' 	=> 'btn danger',
-					'text' 		=> 'Delete',
-				),
-			);
-		}
-		
-		if ($key !== NULL)
-			return $options_array[$key];
-		
-		return $options_array;
+		return $this->_options_array;
 	}
 	
 }

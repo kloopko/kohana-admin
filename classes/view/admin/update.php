@@ -3,6 +3,8 @@
  * Generic (U)PDATE view model - for single record
  */
 class View_Admin_Update extends View_Admin_Layout {
+	
+	protected $_template = 'admin/update';
 
 	/**
 	 * @var	mixed	[Kostache|Formo] form
@@ -70,7 +72,7 @@ class View_Admin_Update extends View_Admin_Layout {
 	 */
 	public function headline()
 	{
-		return 'Edit '.$this->model().' #'.$this->item->id;
+		return 'Update '.$this->model().' #'.$this->item->id;
 	}
 	
 }

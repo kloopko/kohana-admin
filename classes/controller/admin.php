@@ -16,7 +16,7 @@ abstract class Controller_Admin extends Kohana_Controller {
 	{
 		parent::before();
 		
-		// Security headers
+		// Set security headers
 		$this->response
 			->headers('x-content-type-options','nosniff')
 			->headers('x-frame-options','SAMEORIGIN')
@@ -58,8 +58,8 @@ abstract class Controller_Admin extends Kohana_Controller {
 	
 	/**
 	 * Check permissions for a certain Request
-	 *    	Uses late static binding so children classes can override this method 
-	 * 		only in order to replace its functionality
+	 * 	Uses late static binding so child classes can override this 
+	 * 	in order to replace its functionality
 	 *
 	 * @param	Request	$request
 	 */
@@ -71,10 +71,8 @@ abstract class Controller_Admin extends Kohana_Controller {
 			
 			if ($request->action() !== 'login')
 			{
-				$url = Route::url('admin',array(
-					'controller' 	=> 'auth',
-					'action' 		=> 'login',
-				));
+				// Get the reverse route to redirect user to login page
+				$url = Route::url('admin/auth');
 				
 				$request->redirect($url);
 			}

@@ -13,8 +13,7 @@ return array(
 		),
 		
 		'head_js' => array(
-			array('src' => URL::site('js/jquery.ajaxform.js')),
-			array('src' => URL::site('colorpicker/js/colorpicker.js')),
+			#array('src' => URL::site('js/jquery.ajaxform.js')),
 		),
 		
 		'title' => array(

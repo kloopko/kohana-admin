@@ -19,6 +19,8 @@ class View_Admin_Create extends View_Admin_Layout {
 	 */
 	public $errors;
 	
+	protected $_template = 'admin/create';
+	
 	/**
 	 * Returns the form for current view
 	 */

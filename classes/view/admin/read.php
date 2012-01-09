@@ -3,6 +3,8 @@
  * Generic (R)EAD view model - for single record
  */
 class View_Admin_Read extends View_Admin_Layout {
+	
+	protected $_template = 'admin/read';
 
 	/**
 	 * @var	Model

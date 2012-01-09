@@ -17,10 +17,10 @@ abstract class Controller_Admin_CRUD extends Controller_Admin {
 			$this->_model = $this->request->controller();
 		}
 		
-		// If there is no model specific view, use the CRUD default
+		// If there is no action specific view, use the CRUD default
 		if ($this->auto_view === TRUE and ! $this->view)
 		{
-			list ($view_name, $view_path) = Controller_Admin_CRUD::find_view($this->request);
+			list ($view_name, $view_path) = Controller_Admin_CRUD::find_default_view($this->request);
 			
 			if (Kohana::find_file('classes', $view_path))
 			{
@@ -28,21 +28,17 @@ abstract class Controller_Admin_CRUD extends Controller_Admin {
 			}
 		}
 		
-		// If view has been detected/specified already, set other defaults
+		// If view has been detected/specified already, pass required vars
 		if ($this->view)
 		{
-			// Assign current action name to the view
-			$this->view->action = $this->request->action();
+			$this->view->action 	= $this->request->action();			
+			$this->view->controller = $this->request->controller();			
+			$this->view->model 		= $this->_model;
 			
-			// Assign current controller name to the view
-			$this->view->controller = $this->request->controller();
-			
-			// Assign current model name to the view
-			$this->view->model = $this->_model;
-			
-			// Check if form partial exists and assign it (for CREATE / UPDATE)
+			// Check if form partial exists and assign it for CREATE / UPDATE
 			if (in_array($this->request->action(), array('create','update')))
 			{
+				// TODO: this makes no sense whatsoever
 				$folder = str_replace('_', DIRECTORY_SEPARATOR, $this->_model);
 				
 				$tpl = "admin/{$folder}/_form";
@@ -51,14 +47,14 @@ abstract class Controller_Admin_CRUD extends Controller_Admin {
 				{
 					$this->view->partial('form', $tpl);
 				}
-				else
-				{
-					#echo 'Form not available: '.$tpl;
-				}
 			}
 		}
 	}
 
+	/**
+	 * Action for reading multiple records of the current model
+	 * Pagination will be displayed in case 
+	 */
 	public function action_index()
 	{
 		$count = ORM::factory($this->_model)->count_all();
@@ -70,6 +66,7 @@ abstract class Controller_Admin_CRUD extends Controller_Admin {
 			'directory' 	=> $this->request->directory(),
 			'controller' 	=> $this->request->controller(),
 			'action'		=> $this->request->action(),
+			'view'			=> 'pagination/bootstrap',
 		));
 		
 		$items = ORM::factory($this->_model)
@@ -195,7 +192,7 @@ abstract class Controller_Admin_CRUD extends Controller_Admin {
 	 * @param	Request
 	 * @return	array	view_name, view_path
 	 */
-	public static function find_view(Request $request)
+	public static function find_default_view(Request $request)
 	{
 		// Empty array for view name chunks
 		$view_name = array('View');

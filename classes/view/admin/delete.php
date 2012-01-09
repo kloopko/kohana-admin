@@ -3,6 +3,8 @@
  * Generic (D)ELETE view model - for single records
  */
 class View_Admin_Delete extends View_Admin_Layout {
+	
+	protected $_template = 'admin/delete';
 
 	/**
 	 * @var	ORM		model
