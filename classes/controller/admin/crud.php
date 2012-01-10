@@ -11,7 +11,7 @@ abstract class Controller_Admin_CRUD extends Controller_Admin {
 	{
 		parent::before();
 		
-		// Detect the model if not specified
+		// Detect the model if not specified manually
 		if ($this->_model === NULL)
 		{
 			$this->_model = $this->request->controller();
@@ -20,7 +20,7 @@ abstract class Controller_Admin_CRUD extends Controller_Admin {
 		// If there is no action specific view, use the CRUD default
 		if ($this->auto_view === TRUE and ! $this->view)
 		{
-			list ($view_name, $view_path) = Controller_Admin_CRUD::find_default_view($this->request);
+			list ($view_name, $view_path) = static::find_default_view($this->request);
 			
 			if (Kohana::find_file('classes', $view_path))
 			{
@@ -28,39 +28,25 @@ abstract class Controller_Admin_CRUD extends Controller_Admin {
 			}
 		}
 		
-		// If view has been detected/specified already, pass required vars
+		// If view has been detected/specified already, pass required vars to it
 		if ($this->view)
 		{
 			$this->view->action 	= $this->request->action();			
 			$this->view->controller = $this->request->controller();			
 			$this->view->model 		= $this->_model;
-			
-			// Check if form partial exists and assign it for CREATE / UPDATE
-			if (in_array($this->request->action(), array('create','update')))
-			{
-				// TODO: this makes no sense whatsoever
-				$folder = str_replace('_', DIRECTORY_SEPARATOR, $this->_model);
-				
-				$tpl = "admin/{$folder}/_form";
-				
-				if ($path = Kohana::find_file('templates', $tpl, 'mustache'))
-				{
-					$this->view->partial('form', $tpl);
-				}
-			}
 		}
 	}
 
 	/**
 	 * Action for reading multiple records of the current model
-	 * Pagination will be displayed in case 
+	 * Pagination will be displayed in case there are more records than the page limit
 	 */
 	public function action_index()
 	{
 		$count = ORM::factory($this->_model)->count_all();
 		
 		$pagination = Pagination::factory(array(
-			'items_per_page'=> 8,
+			'items_per_page'=> 10,
 			'total_items' 	=> $count,
 		))->route_params(array(
 			'directory' 	=> $this->request->directory(),
@@ -79,35 +65,9 @@ abstract class Controller_Admin_CRUD extends Controller_Admin {
 		$this->view->pagination = $pagination;
 	}
 	
-	public function action_delete()
-	{
-		$item = ORM::factory($this->_model, $this->request->param('id'));
-		
-		if ( ! $item->loaded())
-		{
-			throw new HTTP_Exception_404(ucfirst($this->_model).' doesn`t exist: :id', 
-				array(':id' => $this->request->param('id')));
-		}
-		
-		if ($this->request->method() === Request::POST)
-		{
-			$action = $this->request->post('action');
-			
-			if ($action !== 'yes')
-			{
-				$this->request->redirect(Route::url('admin', array(
-					'controller' => $this->request->controller()
-				)));
-			}
-			
-			$item->delete();
-			
-			$this->response->body('SUCCESS');
-		}
-		
-		$this->view->item = $item;
-	}
-	
+	/**
+	 * Action for creating a single record
+	 */
 	public function action_create()
 	{
 		$item = ORM::factory($this->_model);
@@ -134,12 +94,27 @@ abstract class Controller_Admin_CRUD extends Controller_Admin {
 		}
 			
 		$this->view->item = $item;
-		$this->view->breadcrumb()->add('action',array(
-			'text' 	=> 'Create new '.$this->_model, 
-			'url' 	=> $this->request->url(),
-		));
 	}
 	
+	/**
+	 * Action for reading a single record
+	 */
+	public function action_read()
+	{
+		$item = ORM::factory($this->_model, $this->request->param('id'));
+		
+		if ( ! $item->loaded())
+		{
+			throw new HTTP_Exception_404(':model with ID :id doesn`t exist!',
+				array(':model' => $this->_model, ':id' => $this->request->param('id')));
+		}
+		
+		$this->view->item = $item;
+	}
+	
+	/**
+	 * Action for updating a single record
+	 */
 	public function action_update()
 	{
 		$item = ORM::factory($this->_model, $this->request->param('id'));
@@ -173,17 +148,83 @@ abstract class Controller_Admin_CRUD extends Controller_Admin {
 		$this->view->item = $item;
 	}
 	
-	public function action_read()
+	/**
+	 * Action for deleting a single record
+	 */
+	public function action_delete()
 	{
 		$item = ORM::factory($this->_model, $this->request->param('id'));
 		
 		if ( ! $item->loaded())
 		{
-			throw new HTTP_Exception_404(':model with ID :id doesn`t exist!',
-				array(':model' => $this->_model, ':id' => $this->request->param('id')));
+			throw new HTTP_Exception_404(ucfirst($this->_model).' doesn`t exist: :id', 
+				array(':id' => $this->request->param('id')));
+		}
+		
+		if ($this->request->method() === Request::POST)
+		{
+			$action = $this->request->post('action');
+			
+			if ($action !== 'yes')
+			{
+				$this->request->redirect(Route::url('admin', array(
+					'controller' => $this->request->controller()
+				)));
+			}
+			
+			$item->delete();
+			
+			$this->request->redirect(Route::url('admin', array(
+				'controller' => $this->request->controller()
+			)));
 		}
 		
 		$this->view->item = $item;
+	}
+	
+	/**
+	 * Action for deleting multiple records
+	 * 
+	 * 	ORM::delete() is invoked on each of the records instead of 
+	 * 	deleting them all with a single query
+	 */
+	public function action_deletemultiple()
+	{
+		$ids = ($this->request->method() === Request::POST)
+			? $this->request->post('ids')
+			: $this->request->query('ids');
+			
+		// If no IDs were specified, redirect back to referrer
+		if (count($ids) === 0)
+		{
+			$redirect_url = $this->request->referrer() ?: Route::url('admin', array(
+				'controller' => $this->controller()
+			));
+			
+			$this->request->redirect($redirect_url);
+		}
+		
+		// Create an empty instance of current model to get additional infos
+		$object = ORM::factory($this->_model);
+		
+		// Select items requested for deletion
+		$items = ORM::factory($this->_model)
+			->where($object->object_name().'.'.$object->primary_key(),'IN',$ids)
+			->find_all();
+		
+		if ($this->request->method() === Request::POST)
+		{
+			foreach ($items as $item)
+			{
+				$item->delete();
+			}
+			
+			$this->request->redirect(Route::url('admin', array(
+				'controller' => $this->request->controller()
+			)));
+		}
+		
+		$this->view->items = $items;
 	}
 	
 	/**

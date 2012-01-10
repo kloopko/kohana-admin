@@ -84,6 +84,7 @@ abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 					}
 					
 				break;
+				case 'index' : break;
 				case 'create' :
 					
 					$breadcrumb->add('action', array(
@@ -172,25 +173,37 @@ abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 	{
 		return Arr::path($this->config(), 'head_js');
 	}
-	
+
+	/**
+	 * Figures out the links to display in header 
+	 * based on available CRUD controllers
+	 * 
+	 * @cached	If Kohana::$caching is enabled (should be disabled in dev env)
+	 * @return	array	Links ready for display in header
+	 */
 	public function controller_links()
 	{
-		$benchmark = Profiler::start('Admin','controller_links');
+		$cache_alias = 'View_Admin::controller_links';
+		
+		// Retrieve cached records to skip the painful reflection process
+		if (Kohana::$caching and $cache = Kohana::cache($cache_alias))
+			return $cache;
 		
 		$folder = $folder = 'classes/controller/admin';
-		$paths = Arr::flatten(Kohana::list_files($folder));
+		$paths 	= Arr::flatten(Kohana::list_files($folder));
 		
 		$classes = array();
 		
 		foreach ($paths as $file => $path)
 		{
+			// Clean the suffix to get the class name
 			$suffix = str_replace(array($folder,'\\','/'), array('','_','_'), $file);			
 			$suffix = pathinfo($suffix, PATHINFO_FILENAME);			
 			$suffix = trim(strtolower($suffix), '_ ');
 		
 			$classname = 'Controller_Admin_'.$suffix;
 			
-			// Create the Reflection controller
+			// Create the Reflection controller class
 			$controller = new ReflectionClass($classname);
 			
 			// Include only controllers which extend the CRUD controller
@@ -216,30 +229,23 @@ abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 			}
 		}
 		
-		Profiler::stop($benchmark);
+		// Cache links if caching is enabled
+		Kohana::$caching and Kohana::cache($cache_alias, $links);
 		
 		return $links;
 	}
 	
+	/**
+	 * Links to display in the header
+	 * 
+	 * @return	array
+	 */
 	public function header_links()
 	{
 		if ( ! Auth::instance()->logged_in('admin'))
 			return FALSE;
 		
-		$links = array();
-		
-		foreach ($this->controller_links() as $link)
-		{
-			$links[] = $link;
-		}
-		
-		$links[] = array(
-			'text' 	=> 'Log out »',
-			'url'	=> Route::url('admin/auth', array(
-				'action'	=> 'logout',
-				'token'		=> Security::token(),
-			)),
-		);
+		$links = array_values($this->controller_links());
 		
 		return $links;
 	}
@@ -258,6 +264,30 @@ abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 	public function lang()
 	{
 		return I18n::lang();
+	}
+	
+	/**
+	 * Returns all required logout links
+	 * 
+	 * @return	array
+	 */
+	public function logout_links()
+	{
+		if ( ! Auth::instance()->logged_in())
+			return FALSE;
+		
+		$base = Route::url('admin/auth',array(
+			'action' 	=> 'logout',
+			'token' 	=> Security::token(),
+		));
+		
+		$result = array(
+			'logout' 			=> $base,
+			'logout_destroy' 	=> $base.'?destroy=1',
+			'logout_all' 		=> $base.'?all=1',
+		);
+		
+		return $result;
 	}
 	
 	/**

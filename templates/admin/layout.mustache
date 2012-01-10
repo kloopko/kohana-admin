@@ -32,9 +32,25 @@ body {
 				</li>
 				{{/header_links}}
 			</ul>
-			<p class="pull-right">
-				{{{header_text}}}
-			</p>
+			{{#logout_links}}
+			<ul class="nav secondary-nav">
+				<li class="dropdown" data-dropdown="dropdown">
+					<a class="dropdown-toggle" href="#">Log out</a>
+					<ul class="dropdown-menu">
+						<li>
+							<a href="{{logout}}">Just .. log out</a>
+						</li>
+						<li class="divider"></li>
+						<li>
+							<a href="{{logout_destroy}}">Log out &amp; destroy</a>
+						</li>
+						<li>
+							<a href="{{logout_all}}">Log out all sessions</a>
+						</li>
+					</ul>
+				</li>
+			</ul>
+			{{/logout_links}}
 		</div>
 	</div>
 </div>
@@ -47,7 +63,9 @@ body {
 </div>
 <footer>
 	<p class="container">
-		Admin panel for Kohana created by <a href="http://kloopko.com/">Kloopko</a>.
+		<span class="pull-left">Admin panel for Kohana created by <a href="http://kloopko.com/">Kloopko</a>.</span>
+		
+		<span class="pull-right">Powered by <a href="http://twitter.github.com/bootstrap/">Bootstrap</a>, from Twitter.</span>
 	</p>
 </footer>
 <script type="text/javascript">

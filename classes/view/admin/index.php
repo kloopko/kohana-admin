@@ -95,6 +95,18 @@ class View_Admin_Index extends View_Admin_Layout {
 	}
 	
 	/**
+	 * Action URL for deleting multiple records
+	 * @return	string
+	 */
+	public function deletemultiple_url()
+	{
+		return Route::url('admin', array(
+			'controller' 	=> $this->controller,
+			'action'		=> 'deletemultiple',
+		));
+	}
+	
+	/**
 	 * @return	string	Page headline
 	 */
 	public function headline()
@@ -162,6 +174,7 @@ class View_Admin_Index extends View_Admin_Layout {
 				
 				// Push data to the rows array
 				$result['rows'][] = array(
+					'item'		=> $item,
 					'options' 	=> $options,
 					'values' 	=> $values,
 				);

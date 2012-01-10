@@ -1,5 +1,5 @@
 <?php echo $open; ?>
-	<label<?php if ($id = $this->attr('id')) echo ' for="'.$id.'"'; ?>>
+	<label <?php if ($id = $this->attr('id')) echo ' for="'.$id.'"'; ?>>
 		<?php echo $label; ?>
 	</label>
 	<div class="input">

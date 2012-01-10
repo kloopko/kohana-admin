@@ -3,6 +3,7 @@
 ## Dependencies
 - [Auth](http://github.com/kohana/auth)
 - [Formo](http://github.com/bmidget/kohana-formo)
+- [Kohana 3.2](https://github.com/kohana/kohana/tree/3.2/master)
 - [KOstache](http://github.com/zombor/KOstache)
 - [Pagination](http://github.com/kloopko/kohana-pagination)
 
@@ -23,6 +24,13 @@ If you don't specify `$_model`, it'll be automatically detected from the control
 
 ### Views
 All views must extend `View_Admin_Layout` in order to inherit Bootstrap templating capabilities. 
+For CRUD operations, extend belonging View model:
+
+- View_Admin_Index (list of records)
+- View_Admin_Create (create new record)
+- View_Admin_Read (viewing single record)
+- View_Admin_Update (update single record)
+- View_Admin_Delete (delete single record)
 
 ## Usage
 By default you don't need to add anything additionaly for direct model CRUD, just create the controller and that's it. Link will be automatically added to the header using Reflection.

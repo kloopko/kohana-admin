@@ -42,12 +42,22 @@ class Controller_Admin_Auth extends Controller_Admin {
 		}
 	}
 
+	/**
+	 * Action for logging out the current user
+	 * 
+	 * 	Additional query params can be specified:
+	 * 		destroy - to completely destroy the session
+	 * 		all 	- to remove all user tokens (logout from everywhere)
+	 */
 	public function action_logout()
 	{
 		// Log out only if the token is ok
 		if (Security::token() === $this->request->param('token'))
 		{
-			Auth::instance()->logout();
+			$destroy = (bool) $this->request->query('destroy');
+			$all	 = (bool) $this->request->query('all');
+			
+			Auth::instance()->logout($destroy, $all);
 		}
 		
 		$this->request->redirect(Route::url('admin/auth'));

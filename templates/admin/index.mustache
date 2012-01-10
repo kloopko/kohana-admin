@@ -3,33 +3,62 @@
 </div>
 
 {{#create_button}}
-<a class="btn primary large" href="{{url}}">{{text}}</a>
+<div class="well">
+	<a class="btn primary large" href="{{url}}">{{text}}</a>
+</div>
 {{/create_button}}
 
 {{#result}}
-<table class="zebra-striped">
-	<thead>
-		<tr>
-		{{#columns}}
-		<th>{{name}}</th>
-		{{/columns}}
-		</tr>
-	</thead>
-	<tbody>	
-		{{#rows}}
-		<tr>
-			{{#values}}
-			<td>{{value}}</td>
-			{{/values}}
-			<td>
-			{{#options}}
-				<a class="{{class}}" href="{{url}}">{{text}}</a>
-			{{/options}}
-			</td>
-		</tr>
-		{{/rows}}
-	</tbody>
-</table>
+<form accept-charset="{{charset}}" action="{{deletemultiple_url}}" id="deletemultiple_form" method="GET">
+	<table class="zebra-striped">
+		<thead>
+			<tr>
+				<th>
+					<input type="checkbox" id="select_all" />
+				</th>
+				{{#columns}}
+				<th>{{name}}</th>
+				{{/columns}}
+			</tr>
+		</thead>
+		<tbody>	
+			{{#rows}}
+			<tr>
+				<td>
+					<input type="checkbox" name="ids[]" value="{{#item}}{{id}}{{/item}}" />
+				</td>
+				{{#values}}
+				<td>{{value}}</td>
+				{{/values}}
+				<td>
+				{{#options}}
+					<a class="{{class}}" href="{{url}}">{{text}}</a>
+				{{/options}}
+				</td>
+			</tr>
+			{{/rows}}
+		</tbody>
+	</table>
+	<div class="clearfix">
+		<button class="btn large error" id="confirm_delete_multiple" value="yes" type="submit">Delete selected records</button>
+	</div>
+</form>
 {{/result}}
 
 {{{pagination}}}
+
+<script>
+$(function(){
+	$('input#select_all').click(function(e){
+		
+		var cbs = '#deletemultiple_form input[type="checkbox"]';
+		
+		if ($(this).is(':checked')) {
+			$(cbs).removeAttr('checked');
+		}
+		else {
+			$(cbs).attr('checked');
+		}
+	});
+});
+</script>

@@ -1,14 +1,17 @@
-<?php echo $open; ?>
-	<?php echo $label; ?>
-	<?php echo $message; ?>
-	<span class="field">
+<div class="clearfix">
+	<label><?php echo $label; ?></label>
+	<div class="input">
+		<ul class="inputs-list">
 		<?php foreach ($this->get('options') as $key => $option): ?>
-			<span class="checkbox">
+			<li class="checkbox">
 				<label>
-					<span class="input"><input<?php echo HTML::attributes($this->get_option_attr('checkbox', $option, $key)); ?> /></span>
-					<span class="text"><?php echo $this->option_label($option, $key); ?></span>
+					<input<?php echo HTML::attributes($this->get_option_attr('checkbox', $option, $key)); ?> />
+					
+					<span><?php echo $this->option_label($option, $key); ?></span>
 				</label>
-			</span>
+			</li>
 		<?php endforeach; ?>
-	</span>
-<?php echo $close; ?>
+		</ul>
+		<?php echo $message; ?>
+	</div>
+</div>
