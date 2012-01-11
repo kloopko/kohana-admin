@@ -1,11 +1,11 @@
 <ul class="nav">
 	{{#links}}
-		{{#direct}}
+		{{^submenu}}
 		<li class="{{#selected}}selected{{/selected}}">
 			<a href="{{url}}">{{text}}</a>
 		</li>
-		{{/direct}}
-		{{^direct}}
+		{{/submenu}}
+		{{#submenu}}
 		<li>
 			<ul class="nav secondary-nav">
 				<li class="dropdown" data-dropdown="dropdown">
@@ -20,6 +20,6 @@
 				</li>
 			</ul>
 		</li>
-		{{/direct}}
+		{{/submenu}}
 	{{/links}}
 </ul>

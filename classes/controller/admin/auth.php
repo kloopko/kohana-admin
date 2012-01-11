@@ -43,11 +43,13 @@ class Controller_Admin_Auth extends Controller_Admin {
 	}
 
 	/**
-	 * Action for logging out the current user
+	 * Action for logging out the user
 	 * 
 	 * 	Additional query params can be specified:
+	 *
 	 * 		destroy - to completely destroy the session
 	 * 		all 	- to remove all user tokens (logout from everywhere)
+	 *
 	 */
 	public function action_logout()
 	{

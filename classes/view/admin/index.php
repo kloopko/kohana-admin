@@ -4,7 +4,15 @@
  */
 class View_Admin_Index extends View_Admin_Layout {
 
+	/**
+	 * Alias for the options column (helps separate it from the rest)
+	 */
 	const OPTIONS_ALIAS = 'options::col';
+	
+	/**
+	 * @var	array	Field names to create columns out of
+	 */
+	protected $_includables = array('name','title','email');
 	
 	protected $_template = 'admin/index';
 
@@ -47,8 +55,8 @@ class View_Admin_Index extends View_Admin_Layout {
 		
 		$columns = $model->table_columns();
 		
-		// Always include the primary key first
 		$result = array(
+			// Always include the primary key
 			 array(
 				'alias' => $model->primary_key(),
 				'name' 	=> 'ID',
@@ -56,7 +64,7 @@ class View_Admin_Index extends View_Admin_Layout {
 		);
 		
 		// Also include some default columns - if they exist
-		foreach (array('name','title','email') as $includable)
+		foreach ($this->_includables as $includable)
 		{
 			if (isset($columns[$includable]))
 			{
@@ -71,6 +79,7 @@ class View_Admin_Index extends View_Admin_Layout {
 		if ($created = $model->created_column())
 		{
 			$result[] = array(
+				'type'	=> 'created_column',
 				'alias' => $created['column'],
 				'name' 	=> 'Created',
 			);
@@ -80,6 +89,7 @@ class View_Admin_Index extends View_Admin_Layout {
 		if ($updated = $model->updated_column())
 		{
 			$result[] = array(
+				'type'	=> 'updated_column',
 				'alias' => $updated['column'],
 				'name' 	=> 'Last update',
 			);
@@ -136,15 +146,13 @@ class View_Admin_Index extends View_Admin_Layout {
 			foreach ($this->items as $item)
 			{
 				// Extract aliased values from self::columns()
-				$extracted = Arr::extract($item->as_array(), Arr::pluck($this->columns(), 'alias'));
+				$aliases 	= Arr::pluck($this->columns(), 'alias');
+				$extracted 	= Arr::extract($item->as_array(), $aliases);
 				
 				// Remove the options aliased column
 				unset($extracted[static::OPTIONS_ALIAS]);
 				
-				// Create a numeric array for Mustache
-				$numeric = array_fill(0, count($extracted), '');
-				
-				$values = array_combine(array_keys($numeric), $extracted);
+				$values = array_values($extracted);
 				
 				// Map all values to array('value' => $value)
 				$values = array_map(function($val) { 

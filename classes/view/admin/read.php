@@ -58,10 +58,18 @@ class View_Admin_Read extends View_Admin_Layout {
 		
 		foreach ($array as $field => $value)
 		{
-			$result[] = array(
-				'label' => ucfirst(Arr::get($labels, $field, $field)),
+			$push = array(
+				'label' => Arr::get($labels, $field)),
 				'value' => $value,
 			);
+			
+			if ($push['label'] === NULL)
+			{
+				// Call the Inflector only if label hasn't been retrieved
+				$push['label'] = ucfirst(Inflector::humanize($field));
+			}
+			
+			$result[] = $push;
 		}
 		
 		return $result;

@@ -71,51 +71,10 @@ abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 		
 		if ($this->breadcrumb === NULL)
 		{
-			$breadcrumb = $this->breadcrumb = new View_Bootstrap_Breadcrumb;
-			
-			$breadcrumb->add('root', array(
-					'text' 	=> 'Admin',
-					'url' 	=> Route::url('admin'),
-				));
-			
-			if ($this->controller)
-			{
-				$breadcrumb->add('controller', array(
-					'text' 	=> ucfirst(Inflector::plural($this->model())),
-					'url'	=> Route::url('admin', array(
-						'controller' => $this->controller,
-					)),
-				));
-			}
-			
-			switch ($this->action)
-			{
-				default			: $text = $this->action ? ucfirst($this->action) : NULL;
-				break;
-				case 'index' 	: // Nothing to add
-				break;
-				case 'create' 	: $text = 'Create new '.$this->model();
-				break;
-				case 'read' 	: $text = 'View '.$this->model();
-				break;
-				case 'update' 	: $text = 'Update '.$this->model();
-				break;
-				case 'delete' 	: $text = 'Delete '.$this->model();
-				break;
-				case 'deletemultiple' : 
-					
-					$text = 'Delete multiple '.Inflector::plural($this->model());
-				
-				break;
-			}
-			
-			if (isset($text))
-			{
-				$breadcrumb->add('action', array(
-					'text' 	=> $text,
-					'url'	=> $this->current_url(),
-				));
-			}
+			$this->breadcrumb = new View_Admin_Layout_Breadcrumb;
+			$this->breadcrumb
+				->setup($this->controller, $this->model())
+				->setup_action($this->action, $this->current_url());
 		}
 		
 		return $this->breadcrumb;
@@ -179,6 +138,11 @@ abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 	}
 	
 	/**
+	 * @var	View_Admin_Layout_ControllerNav		Local cache
+	 */
+	protected $_controller_menu;
+	
+	/**
 	 * Links to display in the header
 	 * 
 	 * @return	array
@@ -187,11 +151,15 @@ abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 	{
 		if ( ! Auth::instance()->logged_in('admin'))
 			return FALSE;
-			
-		$menu = new View_Admin_Layout_ControllerNav;
-		$menu->load_folder('controller/admin');
 		
-		return $menu;
+		// Load the controller menu only once
+		if ($this->_controller_menu === NULL)
+		{
+			$this->_controller_menu = new View_Admin_Layout_ControllerNav;
+			$this->_controller_menu->load_folder('controller/admin');
+		}
+		
+		return $this->_controller_menu;
 	}
 	
 	/**

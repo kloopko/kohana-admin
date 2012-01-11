@@ -31,6 +31,7 @@ For CRUD operations, extend the related View:
 - View_Admin_Read (viewing single record)
 - View_Admin_Update (update single record)
 - View_Admin_Delete (delete single record)
+- View_Admin_DeleteMultiple (delete multiple records)
 
 ## Usage
 By default you don't need to add anything additionaly for direct model CRUD, just create the controller and that's it. Link will be automatically added to the header using Reflection.
