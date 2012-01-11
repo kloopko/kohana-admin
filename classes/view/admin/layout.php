@@ -69,6 +69,7 @@ abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 			return $this;
 		}
 		
+		// If breadcrumb isn't set, use the default
 		if ($this->breadcrumb === NULL)
 		{
 			$this->breadcrumb = new View_Admin_Layout_Breadcrumb;

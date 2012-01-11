@@ -89,7 +89,7 @@ abstract class Controller_Admin_CRUD extends Controller_Admin {
 			}
 			catch (ORM_Validation_Exception $e)
 			{
-				$this->view->errors = $e->errors('validation');
+				$this->view->errors = $e->errors('');
 			}
 		}
 			
