@@ -81,6 +81,7 @@ abstract class Controller_Admin extends Kohana_Controller {
 	
 	/**
 	 * Find the view name and view path for Request specified
+	 *
 	 * @param	Request
 	 * @return	array	view_name, view_path
 	 */

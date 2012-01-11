@@ -177,69 +177,6 @@ abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 	{
 		return Arr::path($this->config(), 'head_js');
 	}
-
-	/**
-	 * Figures out which links to display in header 
-	 * based on available CRUD controllers
-	 * 
-	 * @todo	Group folders to sub-menus
-	 * @cached	(If Kohana::$caching is enabled - should be disabled in dev env)
-	 * @return	array	Links ready for display in header
-	 */
-	public function controller_links()
-	{
-		$cache_alias = 'View_Admin::controller_links';
-		
-		// Retrieve cached records to skip the painful reflection process
-		if (Kohana::$caching and $cache = Kohana::cache($cache_alias))
-			return $cache;
-		
-		$folder = 'classes/controller/admin';
-		$files	= Kohana::list_files($folder);
-		$paths 	= Arr::flatten($files);
-		
-		$classes = array();
-		
-		foreach ($paths as $file => $path)
-		{
-			// Clean the suffix to get the class name
-			$suffix = str_replace(array($folder,'\\','/'), array('','_','_'), $file);			
-			$suffix = pathinfo($suffix, PATHINFO_FILENAME);			
-			$suffix = trim(strtolower($suffix), '_ ');
-		
-			$classname = 'Controller_Admin_'.$suffix;
-			
-			// Create the Reflection controller class
-			$controller = new ReflectionClass($classname);
-			
-			// Include only controllers which extend the CRUD controller
-			if ($controller->isSubclassOf('Controller_Admin_CRUD'))
-			{
-				$model = Arr::get($controller->getDefaultProperties(), '_model');
-				
-				// If the model isn't manually defined, use the suffix as default
-				if ($model === NULL)
-				{
-					$model = $suffix;
-				}
-				
-				// Make model name human readable
-				$humanized 	= Inflector::humanize($model);
-				$plural 	= Inflector::plural($humanized);
-				
-				$links[] = array(
-					'selected' 	=> ($this->controller === $suffix),
-					'text' 		=> ucfirst($plural),
-					'url' 		=> Route::url('admin', array('controller' => $suffix)),
-				);
-			}
-		}
-		
-		// Cache links if caching is enabled
-		Kohana::$caching and Kohana::cache($cache_alias, $links);
-		
-		return $links;
-	}
 	
 	/**
 	 * Links to display in the header
