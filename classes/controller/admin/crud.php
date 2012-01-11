@@ -11,10 +11,10 @@ abstract class Controller_Admin_CRUD extends Controller_Admin {
 	{
 		parent::before();
 		
-		// Detect the model if not specified manually
 		if ($this->_model === NULL)
 		{
-			$this->_model = $this->request->controller();
+			throw new Kohana_Exception('$_model not defined in :controller',
+				array(':controller' => $this->request->controller()));
 		}
 		
 		// If there is no action specific view, use the CRUD default

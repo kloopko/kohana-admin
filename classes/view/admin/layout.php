@@ -1,16 +1,18 @@
 <?php defined('SYSPATH') or die('No direct script access.');
-
+/**
+ * Provides basic admin layout
+ * 
+ * @author	Kemal Delalic	<kemal.delalic@gmail.com>
+ */
 abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 	
 	/**
-	 * @var	View_Admin_Breadcrumb
+	 * @var	array
 	 */
-	protected $_breadcrumb;
-
 	protected $_config;
 
 	/**
-	 * @var  string  layout path
+	 * @var	string  layout path
 	 */
 	protected $_layout = 'admin/layout';
 
@@ -30,6 +32,11 @@ abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 	public $action;
 	
 	/**
+	 * @var	View_Bootstrap_Breadcrumb
+	 */
+	public $breadcrumb;
+	
+	/**
 	 * @var	string	Name of the current controller
 	 */
 	public $controller;
@@ -46,15 +53,25 @@ abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 	
 	/**
 	 * Breadcrumb getter
-	 * This method will create breadcrumb if none exists
+	 * This method will create default breadcrumb if one hasn't been defined 
+	 * already
 	 *
-	 * @return	View_Admin_Breadcrumb
+	 * @param	View_Bootstrap_Breadcrumb	$breadcrumb to inject
+	 * @return	View_Admin_Layout			In case breadcrumb is injected (chaining)
+	 * @return	View_Bootstrap_Breadcrumb
 	 */
-	public function breadcrumb()
+	public function breadcrumb(View_Bootstrap_Breadcrumb $breadcrumb = NULL)
 	{
-		if ($this->_breadcrumb === NULL)
+		if ($breadcrumb !== NULL)
 		{
-			$breadcrumb = $this->_breadcrumb = new View_Admin_Breadcrumb;
+			$this->breadcrumb = $breadcrumb;
+			
+			return $this;
+		}
+		
+		if ($this->breadcrumb === NULL)
+		{
+			$breadcrumb = $this->breadcrumb = new View_Bootstrap_Breadcrumb;
 			
 			$breadcrumb->add('root', array(
 					'text' 	=> 'Admin',
@@ -73,54 +90,35 @@ abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 			
 			switch ($this->action)
 			{
-				default:
-					
-					if ($this->action)
-					{
-						$breadcrumb->add('action', array(
-							'text' 	=> ucfirst($this->action),
-							'url'	=> $this->current_url(),
-						));
-					}
-					
+				default			: $text = $this->action ? ucfirst($this->action) : NULL;
 				break;
-				case 'index' : break;
-				case 'create' :
+				case 'index' 	: // Nothing to add
+				break;
+				case 'create' 	: $text = 'Create new '.$this->model();
+				break;
+				case 'read' 	: $text = 'View '.$this->model();
+				break;
+				case 'update' 	: $text = 'Update '.$this->model();
+				break;
+				case 'delete' 	: $text = 'Delete '.$this->model();
+				break;
+				case 'deletemultiple' : 
 					
-					$breadcrumb->add('action', array(
-						'text' 	=> 'Create new '.$this->model(),
-						'url' 	=> $this->current_url(),
-					));
-					
-				break;
-				case 'read' :
-				
-					$breadcrumb->add('action',array(
-						'text' 	=> 'View '.$this->model(),
-						'url' 	=> $this->current_url(),
-					));
-				
-				break;
-				case 'update' :
-				
-					$breadcrumb->add('action',array(
-						'text' 	=> 'Update '.$this->model(),
-						'url' 	=> $this->current_url(),
-					));
-				
-				break;
-				case 'delete' :
-							
-					$breadcrumb->add('action',array(
-						'text' 	=> 'Delete '.$this->model(),
-						'url' 	=> $this->current_url(),
-					));
+					$text = 'Delete multiple '.Inflector::plural($this->model());
 				
 				break;
 			}
+			
+			if (isset($text))
+			{
+				$breadcrumb->add('action', array(
+					'text' 	=> $text,
+					'url'	=> $this->current_url(),
+				));
+			}
 		}
 		
-		return $this->_breadcrumb;
+		return $this->breadcrumb;
 	}
 	
 	/**
@@ -150,6 +148,8 @@ abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 	
 	/**
 	 * CSS files to load
+	 *
+	 * @return	array
 	 */
 	public function css()
 	{
@@ -160,6 +160,8 @@ abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 	
 	/**
 	 * Get the current Requests' URL
+	 * 
+	 * @return	string
 	 */
 	public function current_url()
 	{
@@ -168,6 +170,8 @@ abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 	
 	/**
 	 * JS to load before content
+	 *
+	 * @return	array
 	 */
 	public function head_js()
 	{
@@ -175,10 +179,11 @@ abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 	}
 
 	/**
-	 * Figures out the links to display in header 
+	 * Figures out which links to display in header 
 	 * based on available CRUD controllers
 	 * 
-	 * @cached	If Kohana::$caching is enabled (should be disabled in dev env)
+	 * @todo	Group folders to sub-menus
+	 * @cached	(If Kohana::$caching is enabled - should be disabled in dev env)
 	 * @return	array	Links ready for display in header
 	 */
 	public function controller_links()
@@ -189,8 +194,9 @@ abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 		if (Kohana::$caching and $cache = Kohana::cache($cache_alias))
 			return $cache;
 		
-		$folder = $folder = 'classes/controller/admin';
-		$paths 	= Arr::flatten(Kohana::list_files($folder));
+		$folder = 'classes/controller/admin';
+		$files	= Kohana::list_files($folder);
+		$paths 	= Arr::flatten($files);
 		
 		$classes = array();
 		
@@ -218,12 +224,12 @@ abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 				}
 				
 				// Make model name human readable
-				$humanized = Inflector::humanize($model);
-				$humanized = Inflector::plural($humanized);
+				$humanized 	= Inflector::humanize($model);
+				$plural 	= Inflector::plural($humanized);
 				
 				$links[] = array(
 					'selected' 	=> ($this->controller === $suffix),
-					'text' 		=> ucfirst($humanized),
+					'text' 		=> ucfirst($plural),
 					'url' 		=> Route::url('admin', array('controller' => $suffix)),
 				);
 			}
@@ -244,12 +250,18 @@ abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 	{
 		if ( ! Auth::instance()->logged_in('admin'))
 			return FALSE;
+			
+		$menu = new View_Admin_Layout_ControllerNav;
+		$menu->load_folder('controller/admin');
 		
-		$links = array_values($this->controller_links());
-		
-		return $links;
+		return $menu;
 	}
 	
+	/**
+	 * The main link to admin homepage
+	 * 
+	 * @return	array
+	 */
 	public function home_link()
 	{
 		return array(
@@ -260,6 +272,8 @@ abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 	
 	/**
 	 * Returns the current language
+	 * 
+	 * @return	string
 	 */
 	public function lang()
 	{
@@ -340,7 +354,9 @@ abstract class View_Admin_Layout extends Kohana_Kostache_Layout {
 	}
 	
 	/**
-	 * Page title
+	 * Page <title>
+	 *
+	 * @return	string
 	 */
 	public function title()
 	{

@@ -49,9 +49,13 @@ class View_Admin_Create extends View_Admin_Layout {
 				$this->form = Formo::form()
 					->orm('load', $this->item, $excluded, TRUE)
 					->set('view_prefix', 'bootstrap')
-					->add('token','hidden',Security::token())
-					->add('Finish','button','update',array('attr' => 
-						array('class' => 'btn large primary','type' => 'submit')));
+					->add('token', 'hidden', Security::token())
+					->add('Finish', 'button','create', array('attr' => 
+						array(
+							'class' => 'btn large primary',
+							'type' 	=> 'submit',
+						)
+					));
 						
 				if ($this->errors)
 				{

@@ -20,11 +20,11 @@ In case you want a *CRUD* controller, you must only extend `Controller_Admin_CRU
 		
 	}
 
-If you don't specify `$_model`, it'll be automatically detected from the controller name, e.g. Post for Controller_Admin_Post.
+`$_model` *must* be specified in CRUD controllers.
 
 ### Views
 All views must extend `View_Admin_Layout` in order to inherit Bootstrap templating capabilities. 
-For CRUD operations, extend belonging View model:
+For CRUD operations, extend the related View:
 
 - View_Admin_Index (list of records)
 - View_Admin_Create (create new record)

@@ -1,9 +1,19 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * Breadcrumb helper
+ * Reads available controllers using Reflection to create a menu
+ * 
+ * @author	Kemal Delalic	<kemal.delalic@gmail.com>
  */
-class View_Admin_Breadcrumb extends Kostache {
-
+class View_Bootstrap_Nav extends Kostache {
+	
+	/**
+	 * @var	string	template file
+	 */
+	protected $_template = 'bootstrap/nav';
+	
+	/**
+	 * @var	array	navigation links
+	 */
 	protected $_links = array();
 	
 	/**
@@ -31,30 +41,6 @@ class View_Admin_Breadcrumb extends Kostache {
 		unset($this->_links[$alias]);
 		
 		return $this;
-	}
-	
-	/**
-	 * Returns links in format suitable for presentation (Mustache)
-	 * 
-	 * @return	array
-	 */
-	public function links()
-	{
-		$result = array();
-		$total = count($this->_links);
-		
-		$i = 0;
-		
-		foreach ($this->_links as $link)
-		{
-			$i++;
-			
-			$link['active'] = ($i === $total);
-			
-			$result[] = $link;
-		}
-		
-		return $result;
 	}
 	
 }
