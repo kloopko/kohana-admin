@@ -55,7 +55,7 @@ class View_Admin_Layout_Breadcrumb extends View_Bootstrap_Breadcrumb {
 			break;
 			case 'create' 	:
 				
-				$text = 'Create new '.$this->model_name;
+				$text = 'Create a new '.$this->model_name;
 				
 			break;
 			case 'read' 	:

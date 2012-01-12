@@ -9,6 +9,8 @@
 		{{#items}}
 		<input type="hidden" name="ids[]" value="{{id}}" />
 		{{/items}}
+		<input type="hidden" name="token" value="{{#values}}{{token}}{{/values}}" />
+		
 		<button class="btn large success" name="action" type="submit" value="yes">Yes</button>
 		<button class="btn large error" name="action" type="submit" value="no">No</button>
 	</div>

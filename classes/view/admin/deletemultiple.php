@@ -27,4 +27,11 @@ class View_Admin_DeleteMultiple extends View_Admin_Layout {
 		return 'Confirm '.Inflector::plural($this->model()).' deletion';
 	}
 	
+	public function values()
+	{
+		return array(
+			'token' => Security::token()
+		);
+	}
+	
 }

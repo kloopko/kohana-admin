@@ -214,9 +214,17 @@ abstract class Controller_Admin_CRUD extends Controller_Admin {
 		
 		if ($this->request->method() === Request::POST)
 		{
-			foreach ($items as $item)
+			$validation = Validation::factory($this->request->post())
+				->rule('token','not_empty')
+				->rule('token','Security::check')
+				->rule('action','equals',array(':value','yes'));
+				
+			if ($validation->check())
 			{
-				$item->delete();
+				foreach ($items as $item)
+				{
+					$item->delete();
+				}
 			}
 			
 			$this->request->redirect(Route::url('admin', array(

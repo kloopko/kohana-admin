@@ -46,9 +46,19 @@ class View_Admin_Create extends View_Admin_Layout {
 					$excluded[] = Arr::get($this->item->updated_column(), 'column');
 				}
 				
+				$this->form = new View_Bootstrap_ModelForm;
+				$this->form->load($this->item);
+				
+				// Add CSRF token field
+				$token = new View_Bootstrap_Form_Field('token', Security::token());
+				$token->type('hidden');
+				
+				$this->form->add($token);
+				
+				/*
 				$this->form = Formo::form()
 					->orm('load', $this->item, $excluded, TRUE)
-					->set('view_prefix', 'bootstrap')
+					->set('view_prefix', '_bootstrap')
 					->add('token', 'hidden', Security::token())
 					->add('Finish', 'button','create', array('attr' => 
 						array(
@@ -56,12 +66,14 @@ class View_Admin_Create extends View_Admin_Layout {
 							'type' 	=> 'submit',
 						)
 					));
-						
+				*/
 				if ($this->errors)
 				{
+					$fields = $this->form->fields();
+					
 					foreach ($this->errors as $field => $error)
 					{
-						if ($field = $this->form->$field)
+						if (isset($fields[$field]) and $field = $this->form->$field)
 						{
 							$field->error($error);
 						}
@@ -78,7 +90,7 @@ class View_Admin_Create extends View_Admin_Layout {
 	 */
 	public function headline()
 	{
-		return 'Create new '.$this->model();
+		return 'Create a new '.$this->model();
 	}
 	
 }

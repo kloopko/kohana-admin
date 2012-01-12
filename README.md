@@ -2,7 +2,6 @@
 
 ## Dependencies
 - [Auth](http://github.com/kohana/auth)
-- [Formo](http://github.com/bmidget/kohana-formo)
 - [Kohana 3.2](https://github.com/kohana/kohana/tree/3.2/master)
 - [KOstache](http://github.com/zombor/KOstache)
 - [Pagination](http://github.com/kloopko/kohana-pagination)
@@ -40,7 +39,7 @@ If you need to add some custom actions, you will have to create a view model and
 
 
 ### Permissions
-This module relies on default Auth modules ACL (`roles_users` table), but you can override this by extending the `Controller_Admin::check_permissions()` method in your child controller, e.g.
+This module relies on default Auth module to provide ACL (`roles_users`) but you can override this by extending the `Controller_Admin::check_permissions()` method in your child controller, e.g.
 
 	public static function check_permissions(Request $request)
 	{

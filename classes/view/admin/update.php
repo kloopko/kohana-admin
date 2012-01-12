@@ -42,20 +42,32 @@ class View_Admin_Update extends View_Admin_Layout {
 				{
 					$excluded[] = Arr::get($this->item->updated_column(), 'column');
 				}
-			
+				
+				$this->form = new View_Bootstrap_ModelForm;
+				$this->form->load($this->item);
+				
+				// Add CSRF token field
+				$token = new View_Bootstrap_Form_Field('token', Security::token());
+				$token->type('hidden');
+				
+				$this->form->add($token);
+				
+			/*
 				// Create the form but don't include the 
 				$this->form = Formo::form()
 					->orm('load', $this->item, $excluded, TRUE)
-					->set('view_prefix','bootstrap')
+					->set('view_prefix','_bootstrap')
 					->add('token','hidden',Security::token())
 					->add('Update','button','update',array('attr' => 
 						array('class' => 'btn large primary','type' => 'submit')));
-						
+					*/
 				if ($this->errors)
 				{
+					$fields = $this->form->fields();
+					
 					foreach ($this->errors as $field => $error)
 					{
-						if ($field = $this->form->$field)
+						if (isset($fields[$field]) and $field = $this->form->$field)
 						{
 							$field->error($error);
 						}

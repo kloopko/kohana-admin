@@ -9,12 +9,12 @@
 {{/create_button}}
 
 {{#result}}
-<form accept-charset="{{charset}}" action="{{deletemultiple_url}}" id="deletemultiple_form" method="GET">
+<form accept-charset="{{charset}}" action="{{#deletemultiple}}{{url}}{{/deletemultiple}}" id="deletemultiple_form" method="GET">
 	<table class="zebra-striped">
 		<thead>
 			<tr>
 				<th>
-					<input type="checkbox" id="select_all" />
+					<input type="checkbox" id="select_all" value="" />
 				</th>
 				{{#columns}}
 				<th>{{name}}</th>
@@ -25,7 +25,7 @@
 			{{#rows}}
 			<tr>
 				<td>
-					<input type="checkbox" name="ids[]" value="{{#item}}{{id}}{{/item}}" />
+					<input class="single" type="checkbox" name="ids[]" value="{{#item}}{{id}}{{/item}}" />
 				</td>
 				{{#values}}
 				<td>{{value}}</td>
@@ -40,7 +40,9 @@
 		</tbody>
 	</table>
 	<div class="clearfix">
-		<button class="btn large error" id="confirm_delete_multiple" value="yes" type="submit">Delete selected records</button>
+		{{#deletemultiple}}
+		<button class="btn large error" id="confirm_delete_multiple" value="yes" type="submit">{{text}}</button>
+		{{/deletemultiple}}
 	</div>
 </form>
 {{/result}}
@@ -51,13 +53,13 @@
 $(function(){
 	$('input#select_all').click(function(e){
 		
-		var cbs = '#deletemultiple_form input[type="checkbox"]';
+		var cbs = '#deletemultiple_form input.single';
 		
 		if ($(this).is(':checked')) {
-			$(cbs).removeAttr('checked');
+			$(cbs).attr('checked',true);
 		}
 		else {
-			$(cbs).attr('checked');
+			$(cbs).removeAttr('checked');
 		}
 	});
 });

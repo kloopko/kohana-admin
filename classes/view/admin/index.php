@@ -7,13 +7,36 @@ class View_Admin_Index extends View_Admin_Layout {
 	/**
 	 * Alias for the options column (helps separate it from the rest)
 	 */
-	const OPTIONS_ALIAS = 'options::col';
+	const OPTIONS_ALIAS = 'options::alias';
 	
 	/**
-	 * @var	array	Field names to create columns out of
+	 * @var	array	Field names to create table columns out of
 	 */
 	protected $_includables = array('name','title','email');
 	
+	/**
+	 * Override this by defining options_array() method in child view classes
+	 * 
+	 * @var	array	Options available for each row in the table
+	 */
+	protected $_options_array = array(
+		'read' => array(
+			'class' 	=> 'btn primary',
+			'text' 		=> 'View',
+		),
+		'update' => array(
+			'class' 	=> 'btn success',
+			'text' 		=> 'Edit',
+		),
+		'delete' => array(
+			'class' 	=> 'btn danger',
+			'text' 		=> 'Delete',
+		),
+	);
+	
+	/**
+	 * @var	array	Mustache template
+	 */
 	protected $_template = 'admin/index';
 
 	/**
@@ -36,7 +59,7 @@ class View_Admin_Index extends View_Admin_Layout {
 				'controller' 	=> $this->controller,
 				'action'		=> 'create',
 			)),
-			'text' => 'Create new '.$this->model(),
+			'text' => 'Create a new '.$this->model(),
 		);
 	}
 	
@@ -108,12 +131,15 @@ class View_Admin_Index extends View_Admin_Layout {
 	 * Action URL for deleting multiple records
 	 * @return	string
 	 */
-	public function deletemultiple_url()
+	public function deletemultiple()
 	{
-		return Route::url('admin', array(
-			'controller' 	=> $this->controller,
-			'action'		=> 'deletemultiple',
-		));
+		return array(
+			'text' => 'Delete selected '.Inflector::plural($this->model()),
+			'url' => Route::url('admin', array(
+				'controller' 	=> $this->controller,
+				'action'		=> 'deletemultiple',
+			)),
+		);
 	}
 	
 	/**
@@ -167,7 +193,7 @@ class View_Admin_Index extends View_Admin_Layout {
 				
 				foreach ($this->options() as $action)
 				{
-					$details = Arr::get(static::options_array(), $action);
+					$details = Arr::get($this->options_array(), $action);
 					
 					$options[] = array(
 						'class' => $details['class'],
@@ -205,21 +231,6 @@ class View_Admin_Index extends View_Admin_Layout {
 			'delete',
 		);
 	}
-	
-	protected $_options_array = array(
-		'read' => array(
-			'class' 	=> 'btn primary',
-			'text' 		=> 'View',
-		),
-		'update' => array(
-			'class' 	=> 'btn success',
-			'text' 		=> 'Edit',
-		),
-		'delete' => array(
-			'class' 	=> 'btn danger',
-			'text' 		=> 'Delete',
-		),
-	);
 	 
 	/**
 	 * List of action => details for individual row (action) options

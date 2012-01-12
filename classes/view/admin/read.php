@@ -59,7 +59,7 @@ class View_Admin_Read extends View_Admin_Layout {
 		foreach ($array as $field => $value)
 		{
 			$push = array(
-				'label' => Arr::get($labels, $field)),
+				'label' => Arr::get($labels, $field),
 				'value' => $value,
 			);
 			

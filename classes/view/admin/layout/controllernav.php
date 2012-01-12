@@ -3,6 +3,7 @@
  * Reads available controllers using Reflection and creates the menu with submenus
  * 
  * @author	Kemal Delalic	<kemal.delalic@gmail.com>
+ * @todo	Simplify this whole class
  */
 class View_Admin_Layout_ControllerNav extends Kostache {
 	
@@ -35,7 +36,7 @@ class View_Admin_Layout_ControllerNav extends Kostache {
 		$this->_folder = $folder;
 		
 		// Prepend "classes/", because it is the only place we're looking in
-		$folder = "classes/{$folder}";
+		$folder = 'classes/'.$folder;
 		
 		// List all files inside of the folder
 		$files = Kohana::list_files($folder);
@@ -53,7 +54,7 @@ class View_Admin_Layout_ControllerNav extends Kostache {
 	}
 	
 	/**
-	 * Checks if a reflected controller has what it takes to get into the menu
+	 * Checks if the reflected controller has what it takes to get into the menu
 	 * 
 	 * @param	ReflectionClass	$controller to check
 	 * @return	boolean FALSE if fails, controllers' model otherwise
@@ -75,11 +76,16 @@ class View_Admin_Layout_ControllerNav extends Kostache {
 	 */
 	protected function _cache_key(array $files)
 	{
-		// Flatten all the files to same level because the cache key is 
-		// generated based on imploded list of files.
-		// This way adding new files will invalidate the old cache,
-		// although it won't be removed from the FS (use Cache if you need this)
-		$keys = array_keys(Arr::flatten($files));
+		/**
+		 * Flatten all the files to same level because the cache key is 
+		 * generated based on imploded list of files.
+		 *
+		 * This way adding new files will invalidate the old cache, although it
+		 * won't be removed from the FS (use Cache module if you need this)
+		 */
+		$flat = Arr::flatten($files);
+		 
+		$keys = array_keys($flat);
 		
 		return sha1(implode('~', $keys));
 	}
@@ -191,8 +197,7 @@ class View_Admin_Layout_ControllerNav extends Kostache {
 			
 			if (is_array($child))
 			{
-				// Add SUCCEED string to the key, 
-				// so single rows don't get overwritten
+				// Add SUCCEED string to the key so single rows aren't overwritten
 				$clean[$new_path.self::SUCCEED] = $this->_clean_paths($child);
 			}
 			else
@@ -208,7 +213,7 @@ class View_Admin_Layout_ControllerNav extends Kostache {
 	}
 	
 	/**
-	 * Flatten method specific for self::_clean_paths() result
+	 * Flatten method specific for self::_clean_paths() resultset
 	 * 
 	 * @param	array	$array to flatten
 	 * @param	string	$parent key to prepend to each of the child keys

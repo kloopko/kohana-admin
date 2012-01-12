@@ -1,1 +1,0 @@
-<div class="clearfix <?php echo ($this->error()) ? 'error' : '' ?>">
