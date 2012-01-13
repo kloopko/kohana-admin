@@ -33,7 +33,8 @@ class View_Admin_Update extends View_Admin_Layout {
 			$this->form = new View_Bootstrap_ModelForm;
 			$this->form->load($this->item);			
 			$this->form->add($token);
-			$this->form->submit()->label('Update this '.$this->model());
+			$this->form->submit()->label(__('Update this :model',
+				array(':model' => $this->model())));
 			
 			if ($this->errors)
 			{
@@ -41,7 +42,7 @@ class View_Admin_Update extends View_Admin_Layout {
 				
 				foreach ($this->errors as $field => $error)
 				{
-					if (isset($fields[$field]) and $field = $this->form->$field)
+					if ($field = Arr::get($fields, $field))
 					{
 						$field->error($error);
 					}

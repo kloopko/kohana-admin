@@ -5,10 +5,14 @@
 		
 			if ($field->type() !== 'hidden') : 		
 	?>	
-			<div class="clearfix">
+			<div class="clearfix <?php echo $field->error() ? 'error' : ''; ?>">
 				<?php echo Form::label($field->name(), $field->label()) ?>
 				<div class="input">
 					<?php echo $field; ?>
+					
+					<?php if ($field->error()) : ?>
+					<span class="help-inline"><?php echo HTML::chars($field->error()) ?></span>
+					<?php endif; ?>
 				</div>
 			</div>	
 	<?php 

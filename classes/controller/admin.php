@@ -22,6 +22,7 @@ abstract class Controller_Admin extends Kohana_Controller {
 			->headers('x-frame-options','SAMEORIGIN')
 			->headers('x-xss-protection','1; mode=block');
 			
+		// Check if user is allowed to continue
 		static::check_permissions($this->request);
 		
 		// Automatically figure out the ViewModel for the current action 
@@ -71,10 +72,8 @@ abstract class Controller_Admin extends Kohana_Controller {
 			
 			if ($request->action() !== 'login')
 			{
-				// Get the reverse route to redirect user to login page
-				$url = Route::url('admin/auth');
-				
-				$request->redirect($url);
+				// Get the reverse route and redirect user to the login page
+				$request->redirect(Route::url('admin/auth'));
 			}
 		}
 	}

@@ -35,6 +35,11 @@
 				echo Form::button($field->name(), $field->label(), $attrs);
 				
 			break;
+			case 'file' :
+			
+				echo Form::file($field->name(), $field->attrs());
+			
+			break;
 			case 'text' : 
 			case 'email' :
 			 
@@ -51,11 +56,10 @@
 			case 'radio' :
 				
 				$options = $field->options();
-				$return = '';
 				
 				foreach ($options as $option)
 				{
-					
+					echo Form::radio($option);
 				}
 				
 			break;

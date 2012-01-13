@@ -3,9 +3,11 @@
 </div>
 
 <form accept-charset="{{charset}}" action="" method="POST">
+	<p>
 	Are you sure you want to remove {{model}} #{{#item}}{{id}}{{/item}}?
+	</p>
 	
-	<div class="actions">
+	<div class="well">
 		<button class="btn large success" name="action" type="submit" value="yes">Yes</button>
 		<button class="btn large error" name="action" type="submit" value="no">No</button>
 	</div>

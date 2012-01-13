@@ -13,27 +13,7 @@ class View_Admin_Index extends View_Admin_Layout {
 	 * @var	array	Field names to create table columns out of
 	 */
 	protected $_includables = array('name','title','email');
-	
-	/**
-	 * Override this by defining options_array() method in child view classes
-	 * 
-	 * @var	array	Options available for each row in the table
-	 */
-	protected $_options_array = array(
-		'read' => array(
-			'class' 	=> 'btn primary',
-			'text' 		=> 'View',
-		),
-		'update' => array(
-			'class' 	=> 'btn success',
-			'text' 		=> 'Edit',
-		),
-		'delete' => array(
-			'class' 	=> 'btn danger',
-			'text' 		=> 'Delete',
-		),
-	);
-	
+		
 	/**
 	 * @var	array	Mustache template
 	 */
@@ -76,9 +56,10 @@ class View_Admin_Index extends View_Admin_Layout {
 		// Create an empty model to get info from
 		$model = ORM::factory($this->model);
 		
-		$columns = $model->table_columns();
+		$columns 	= $model->table_columns();		
+		$labels 	= $model->labels();
 		
-		$result = array(
+		$result 	= array(
 			// Always include the primary key
 			 array(
 				'alias' => $model->primary_key(),
@@ -91,9 +72,11 @@ class View_Admin_Index extends View_Admin_Layout {
 		{
 			if (isset($columns[$includable]))
 			{
+				$label = Arr::get($labels, $includable, $includable);
+				
 				$result[] = array(
 					'alias' => $includable,
-					'name' 	=> ucfirst($includable),
+					'name' 	=> ucfirst($label),
 				);
 			}
 		}
@@ -151,6 +134,29 @@ class View_Admin_Index extends View_Admin_Layout {
 	}
 	
 	/**
+	 * List of available actions to display for each individual row
+	 *
+	 * @return	array
+	 */
+	public function options()
+	{
+		return array(
+			'read' => array(
+				'class' 	=> 'btn primary',
+				'text' 		=> 'View',
+			),
+			'update' => array(
+				'class' 	=> 'btn success',
+				'text' 		=> 'Edit',
+			),
+			'delete' => array(
+				'class' 	=> 'btn danger',
+				'text' 		=> 'Delete',
+			),
+		);
+	}
+	
+	/**
 	 * @var	mixed	local cache for self::results()
 	 */
 	protected $_result;
@@ -191,10 +197,8 @@ class View_Admin_Index extends View_Admin_Layout {
 				// Map options
 				$options = array();
 				
-				foreach ($this->options() as $action)
+				foreach ($this->options() as $action => $details)
 				{
-					$details = Arr::get($this->options_array(), $action);
-					
 					$options[] = array(
 						'class' => $details['class'],
 						'text' 	=> $details['text'],
@@ -216,31 +220,6 @@ class View_Admin_Index extends View_Admin_Layout {
 		}
 		
 		return $this->_result = $result;
-	}
-	
-	/**
-	 * List of available actions to display for each individual row
-	 *
-	 * @return	array
-	 */
-	public function options()
-	{
-		return array(
-			'read',
-			'update',
-			'delete',
-		);
-	}
-	 
-	/**
-	 * List of action => details for individual row (action) options
-	 * This has to be a method so the child view can override / extend it
-	 * 
-	 * @return	array
-	 */
-	public function options_array()
-	{
-		return $this->_options_array;
 	}
 	
 }
