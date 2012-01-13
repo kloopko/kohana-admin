@@ -5,7 +5,9 @@
 <form accept-charset="{{charset}}" action="" method="POST">
 	Are you sure you want to remove {{count}} records??
 	
-	<div class="actions">
+	<hr />
+	
+	<div class="well">
 		{{#items}}
 		<input type="hidden" name="ids[]" value="{{id}}" />
 		{{/items}}

@@ -37,6 +37,12 @@ class View_Bootstrap_Form {
 		$this->_action = $action;
 		
 		$this->attrs($attrs);
+		
+		// Create a default submit button
+		$this->_submit = new View_Bootstrap_Form_Field('submit','1');
+		$this->_submit->type('button')
+			->attr('class','btn large primary')
+			->label('Submit');
 	}
 	
 	/**
@@ -85,9 +91,8 @@ class View_Bootstrap_Form {
 	 */
 	public function add(View_Bootstrap_Form_Field $field)
 	{
-	#	array_push($this->_fields, $field);
-		
 		$this->_fields[$field->name()] = $field;
+		
 		return $this;
 	}
 	
@@ -174,6 +179,23 @@ class View_Bootstrap_Form {
 				unset($this->_fields[$name]);
 			}
 		}
+		
+		return $this;
+	}
+	
+	/**
+	 * Submit field getter / setter
+	 * 
+	 * @param	View_Bootstrap_Form_Field	$field
+	 * @return	[View_Bootstrap_Form] (chainable on set)
+	 * @return	View_Bootstrap_Form_Field	
+	 */
+	public function submit(View_Bootstrap_Form_Field $submit = NULL)
+	{
+		if ($submit === NULL)
+			return $this->_submit;
+			
+		$this->_submit = $submit;
 		
 		return $this;
 	}

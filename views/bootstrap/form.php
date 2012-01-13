@@ -22,7 +22,7 @@
 	?>
 	
 	<div class="actions">
-		<button class="btn large primary" value="1" type="submit">Submit</button>
+		<?php echo $form->submit() ?>
 	</div>
 	
 <?php echo Form::close() ?>
