@@ -162,6 +162,8 @@ class View_Admin_Index extends View_Admin_Layout {
 	protected $_result;
 	
 	/**
+	 * Resultset (table body rows)
+	 * 
 	 * @return	array	(empty if no results)
 	 */
 	public function result()
